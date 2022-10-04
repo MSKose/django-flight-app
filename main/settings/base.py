@@ -33,7 +33,7 @@ INSTALLED_APPS = [
     # 'debug_toolbar',
 
     # my apps
-    # 'users',
+    'users',
 ]
 
 MIDDLEWARE = [
