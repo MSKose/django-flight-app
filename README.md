@@ -32,6 +32,7 @@ This is a back-end flight-app project made with Django DRF. I have used differen
 - Django Rest Framework
 - drf-yasg (Swagger generator)
 - Django Debug Toolbar
+- dj-rest-auth
 
 ## Notes
 ## Installing Swagger
