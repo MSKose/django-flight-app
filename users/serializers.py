@@ -3,6 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
+from dj_rest_auth.serializers import TokenSerializer
 
 class RegisterSerializer(serializers.ModelSerializer):
     # since email field set to blank=True and doesn't validate for uniqueness in source code (User/AbstractUser Model) we're defining it again.
@@ -56,5 +57,21 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         return user
 
-# now this serializer might look wordy, but it is what it is. Besides, you'll probably just copy 
-# and paste this serializer whenever you need a registration serializer
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'username',
+            'email'
+        )
+
+
+class CustomTokenSerializer(TokenSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta(TokenSerializer.Meta):
+        fields = (
+            'key',
+            'user'
+        )
