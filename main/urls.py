@@ -31,4 +31,5 @@ urlpatterns = [
 
     # app url includes:
     path('users/', include('users.urls')),
+    path('flight/', include('flight.urls')),
 ]
