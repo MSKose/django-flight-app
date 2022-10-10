@@ -38,9 +38,28 @@ class ReservationSerializer(serializers.ModelSerializer):
             "passenger"
         )
 
+    """
+    My flight/resv/ endpoint's POST method requires a JSON like the following;
+            {
+                "flight_id": 0,
+                "user_id": 0,
+                "passenger": [
+                {
+                    "first_name": "string",
+                    "last_name": "string",
+                    "email": "user@example.com",
+                    "phone_number": 0
+                }
+            ]
+        }
+
+    And since I want to save the passenger part to my Passenger model and not Reservation model
+    I override the create method of this serializer like so;
+    """    
+
     def create(self, validated_data):
         passenger_data = validated_data.pop('passenger')
-        validated_data['user_id'] = self.context['request'].user.id
+        validated_data['user_id'] = self.context['request'].user.id # self.context['request'].user.id means the current authoenticated user
         reservation = Reservation.objects.create(**validated_data)
         
         for passenger in passenger_data:
@@ -48,3 +67,16 @@ class ReservationSerializer(serializers.ModelSerializer):
             reservation.passenger.add(pas)
         reservation.save()
         return reservation
+
+class StaffFlightSerializer(serializers.ModelSerializer):
+
+    '''
+    how did we get access to reservation while the serializer uses Flight model?
+    well we had a related_name named reservation in our Reservation model
+    with a ForeignKey attached to Flight
+    '''
+    
+    reservation = ReservationSerializer(many=True, read_only=True)
+    class Meta:
+        model = Flight
+        fields = "__all__"
