@@ -3,6 +3,7 @@ from .serializers import FlightSerializer, ReservationSerializer, StaffFlightSer
 from rest_framework import viewsets
 from .models import Flight, Passenger, Reservation
 from .permissions import IsStafforReadOnly
+from datetime import datetime, date
 
 # Create your views here.
 
@@ -28,6 +29,25 @@ class FlightView(viewsets.ModelViewSet):
         if self.request.user.is_staff:
             return StaffFlightSerializer # why tho? since we want our staff user to see all the fields including that of Reservation models' for the flight/flights/ endpoint
         return serializer # else, just return the FlightSerializer, which only returns the Flight fields and nothing related to Reservation
+
+
+    '''
+    I want my staff to see all the flights but clients to see only the upcoming
+    flights. Therefore, I need to override the get_queryset method
+    '''
+    def get_queryset(self):
+        now = datetime.now()
+        current_time = now.strftime('%H:%M:%S')
+        today = date.today()
+        
+        if self.request.user.is_staff:
+            return super().get_queryset()
+        else:
+            queryset = Flight.objects.filter(date_of_departure__gt=today) # gt here means greater than. see: https://docs.djangoproject.com/en/4.1/ref/models/querysets/#gt
+            if Flight.objects.filter(date_of_departure=today):
+                today_qs = Flight.objects.filter(date_of_departure=today).filter(etd__gt=current_time)
+                queryset = queryset.union(today_qs)
+            return queryset
 
 class ReservationView(viewsets.ModelViewSet):
     queryset = Reservation.objects.all()
