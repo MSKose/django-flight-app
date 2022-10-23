@@ -178,7 +178,6 @@ $ git clone https://github.com/MSKose/django-flight-app
     SECRET_KEY=<yourSecretKeyHere>
     DEBUG=True # switch to True when in production
     ENV_NAME=dev # switch to prod when in production
-    DEBUG=True 
     SQL_DATABASE=<yourDatabaseProjectName>
     SQL_USER=<yourDatabaseUsername> 
     SQL_PASSWORD=<yourDatabasePassword>
